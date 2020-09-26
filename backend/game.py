@@ -32,7 +32,7 @@ class Game:
         if not 0 in self.board:
             return 0
 
-        for id in range(1,2):
+        for id in range(1,3):
             # row
             for row in range(self.ROWNUM - 3):
                 for col in range(self.COLNUM):

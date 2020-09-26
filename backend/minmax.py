@@ -3,11 +3,20 @@ from game import *
 
 import random
 import math
+import logging
+
+LOGGER = logging.getLogger("score")
+LOGGER.setLevel(logging.INFO)
+stream = logging.StreamHandler()
+handler = logging.Formatter('%(name)s %(levelname)s: %(message)s')
+stream.setFormatter(handler)
+LOGGER.addHandler(stream)
 
 # =================================
 # This is the class for the MiniMax algorithym
 # =================================
 class MinMaxPlayer(Player):
+
 
     def __init__(self, id, color):
         super().__init__(id, color)
@@ -35,7 +44,7 @@ class MinMaxPlayer(Player):
 
         # if the game is finished
         end = self.is_terminal_node(game)
-        if  end >= 0:
+        if end >= 0:
             if end == self.id:
                 return 1000000000, None
             elif end == rival.id:
@@ -56,6 +65,8 @@ class MinMaxPlayer(Player):
                     if new_score > score:
                         score = new_score
                         column = col
+                if depth == 5:
+                    LOGGER.info("col: {} score: {}".format( col+1, score))
             return score, column
         # minimizing player (the other player)
         else:
@@ -83,17 +94,14 @@ class MinMaxPlayer(Player):
         else:
             rival = 1
 
-        if block.count(self.id) == 4:
-            score += 1500
-
-        elif block.count(rival) == 3 and block.count(0) == 1:
-            score -= 400
+        if block.count(rival) == 3 and block.count(0) == 1:
+            score -= 200
 
         elif block.count(self.id) == 3 and block.count(0) == 1:
             score += 20
 
         elif block.count(self.id) == 2 and block.count(0) == 2:
-            score += 5
+            score += 6
 
         return score
 
@@ -144,6 +152,6 @@ class MinMaxPlayer(Player):
     #=================================
     def best_move(self, game, rival):
 
-        score, column = self.minimax(game, rival,  4, True)
+        score, column = self.minimax(game, rival,  5, True)
 
         return self.move(column, game)

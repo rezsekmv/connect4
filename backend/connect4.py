@@ -26,7 +26,7 @@ def main():
     window.fill(BACKGROUND)
 
     game = Game()
-    p1 = Player(1, RED)
+    p1 = MinMaxPlayer(1, RED)
     p2 = MinMaxPlayer(2, YELLOW)
     next_player = 1
 
@@ -41,15 +41,26 @@ def main():
                 break
 
         if next_player == p1.id:
-            col = get_colnum(game)
+            placed = False
 
-            placed = p1.move(col-1, game)
+            if type(p1) is MinMaxPlayer:
+                placed = p1.best_move(game, p1)
+            if type(p1) is Player:
+                col = get_colnum(game)
+                placed = p1.move(col-1, game)
 
             if placed:
                 next_player = p2.id
 
         elif next_player == p2.id:
-            placed = p2.best_move(game, p1)
+            placed = False
+
+            # order is neccesary cause p2 is always a Player
+            if type(p2) is MinMaxPlayer:
+                placed = p2.best_move(game, p2)
+            elif type(p2) is Player:
+                col = get_colnum(game)
+                placed = p2.move(col-1, game)
 
             if placed:
                 next_player = p1.id
@@ -59,13 +70,17 @@ def main():
 
         if win == 0:
             print("DRAW")
+            game_over = True
         elif win == p1.id:
             print("P1 WON")
+            game_over = True
         elif win == p2.id:
             print("P2 WON")
+            game_over = True
 
         draw(window, game, p1, p2)
+        input("Enter for next move")
 
-    time.sleep(1)
+    time.sleep(3)
 
 main()
