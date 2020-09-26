@@ -27,34 +27,39 @@ class Game:
     #=================================
     # checks if the game is over
     #=================================
-    def isFinished(self, player):
-        # row
-        for row in range(self.ROWNUM - 3):
-            for col in range(self.COLNUM):
-                if self.board[row, col] == player.id and self.board[row + 1, col] == player.id and self.board[
-                    row + 2, col] == player.id and self.board[row + 3, col] == player.id:
-                    return True
-        # col
-        for row in range(self.ROWNUM):
-            for col in range(self.COLNUM - 3):
-                if self.board[row, col] == player.id and self.board[row, col + 1] == player.id and self.board[
-                    row, col + 2] == player.id and self.board[row, col + 3] == player.id:
-                    return True
+    def isFinished(self):
 
-        # diag
-        for row in range(self.ROWNUM - 3):
-            for col in range(self.COLNUM - 3):
-                if self.board[row, col] == player.id and self.board[row + 1, col + 1] == player.id and self.board[
-                    row + 2, col + 2] == player.id and self.board[row + 3, col + 3] == player.id:
-                    return True
+        if not 0 in self.board:
+            return 0
 
-        for row in range(self.ROWNUM - 3):
-            for col in reversed(range(3, self.COLNUM)):
-                if self.board[row, col] == player.id and self.board[row + 1, col - 1] == player.id and self.board[
-                    row + 2, col - 2] == player.id and self.board[row + 3, col - 3] == player.id:
-                    return True
+        for id in range(1,2):
+            # row
+            for row in range(self.ROWNUM - 3):
+                for col in range(self.COLNUM):
+                    if self.board[row, col] == id and self.board[row + 1, col] == id and self.board[
+                        row + 2, col] == id and self.board[row + 3, col] == id:
+                        return id
+            # col
+            for row in range(self.ROWNUM):
+                for col in range(self.COLNUM - 3):
+                    if self.board[row, col] == id and self.board[row, col + 1] == id and self.board[
+                        row, col + 2] == id and self.board[row, col + 3] == id:
+                        return id
 
-        return False
+            # diag
+            for row in range(self.ROWNUM - 3):
+                for col in range(self.COLNUM - 3):
+                    if self.board[row, col] == id and self.board[row + 1, col + 1] == id and self.board[
+                        row + 2, col + 2] == id and self.board[row + 3, col + 3] == id:
+                        return id
+
+            for row in range(self.ROWNUM - 3):
+                for col in reversed(range(3, self.COLNUM)):
+                    if self.board[row, col] == id and self.board[row + 1, col - 1] == id and self.board[
+                        row + 2, col - 2] == id and self.board[row + 3, col - 3] == id:
+                        return id
+
+        return -1
 
 
     #=================================

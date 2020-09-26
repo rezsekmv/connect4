@@ -40,28 +40,30 @@ def main():
                 quit()
                 break
 
-        if next_player == 1:
+        if next_player == p1.id:
             col = get_colnum(game)
 
             placed = p1.move(col-1, game)
-            
-            if game.isFinished(p1):
-                print("Player1 won")
-                next_player = 0
-            
-            if placed:
-                next_player = 2
-
-        elif next_player == 2:
-            placed = p2.best_move(game)
-
-            if game.isFinished(p2):
-                print("AI won")
-                next_player = 0
 
             if placed:
-                next_player = 1
-            
+                next_player = p2.id
+
+        elif next_player == p2.id:
+            placed = p2.best_move(game, p1)
+
+            if placed:
+                next_player = p1.id
+
+
+        win = game.isFinished()
+
+        if win == 0:
+            print("DRAW")
+        elif win == p1.id:
+            print("P1 WON")
+        elif win == p2.id:
+            print("P2 WON")
+
         draw(window, game, p1, p2)
 
     time.sleep(1)
