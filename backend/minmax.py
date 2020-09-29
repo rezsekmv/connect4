@@ -65,7 +65,7 @@ class MinMaxPlayer(Player):
                     if new_score > score:
                         score = new_score
                         column = col
-                if depth == 5:
+                if depth == 4:
                     LOGGER.info("col: {} score: {}".format( col+1, score))
             return score, column
         # minimizing player (the other player)
@@ -152,6 +152,6 @@ class MinMaxPlayer(Player):
     #=================================
     def best_move(self, game, rival):
 
-        score, column = self.minimax(game, rival,  5, True)
+        score, column = self.minimax(game, rival,  4, True)
 
         return self.move(column, game)
