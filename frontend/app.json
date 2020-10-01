@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "connect4",
-    "slug": "connect4",
+    "name": "Connect4",
+    "slug": "Connect4",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "landscape",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
