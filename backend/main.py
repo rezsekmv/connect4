@@ -1,7 +1,5 @@
-from draw import *
-
+from restapi import *
 from minmax import *
-import time
 
 def get_colnum(game):
     col = None
@@ -14,24 +12,18 @@ def main():
 
     # init
     game_over = False
-
     game = Game()
     p1 = Player(1, RED)
     p2 = MinMaxPlayer(2, YELLOW)
     next_player = p1
     rival = p2
 
-    draw_game(window, game, p1, p2)
-
-    while not game_over:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                game_over = True
-                pygame.quit()
-                quit()
-                break
+    app, api = init_api()
+    add_resources(api)
+    run_api(app)
 
 
+'''
         placed = False
         if type(next_player) is MinMaxPlayer:
             placed = next_player.best_move(game, rival)
@@ -58,8 +50,6 @@ def main():
         elif win == p2.id:
             print("P2 WON")
             game_over = True
+        '''
 
-        draw_game(window, game, p1, p2)
-
-    input("Finished...")
 main()

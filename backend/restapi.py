@@ -1,14 +1,27 @@
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Api, Resource
 
-app = Flask(__name__)
-api = Api(app)
+def init_api():
+    app = Flask(__name__)
+    api = Api(app)
+    return app, api
 
 class RestApi(Resource):
 
+    def __init__(self):
+        self.game = 1
+
     def get(self):
-        return {'board': list(self.game.board)}
+        self.game += 1
+        return {'board': self.game}
 
-api.add_resource(RestApi, '/')
+    def post(self):
+        json = request.get_json()
+        json.key1 += 1
+        return json, 201
 
-app.run(debug=True)
+def add_resources(api):
+    api.add_resource(RestApi, '/')
+
+def run_api(app):
+    app.run(debug=True)
