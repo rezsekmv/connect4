@@ -20,7 +20,6 @@ class MinMaxPlayer(Player):
 
     def __init__(self, id, color):
         super().__init__(id, color)
-        self.depth = 4
 
     #=================================
     # place a circle on the board
@@ -39,6 +38,10 @@ class MinMaxPlayer(Player):
     #=================================
     def minimax(self, game, rival, depth, maximizing_player):
 
+        # reached the bottom of the tree
+        if depth == 0:
+            return self.board_score(game), None
+
         # if the game is finished
         end = self.is_terminal_node(game)
         if end >= 0:
@@ -49,10 +52,6 @@ class MinMaxPlayer(Player):
             elif end == 0:
                 return 0, None
 
-        # reached the bottom of the tree
-        if depth == 0:
-            return self.board_score(game, rival), None
-
         # maximizing player (AI)
         if maximizing_player:
             score = -math.inf
@@ -60,18 +59,14 @@ class MinMaxPlayer(Player):
             for col in range(game.COLNUM):
                 new_game = Game()
                 new_game.board = game.board.copy()
-                new_score = 0
                 if new_game.place(self, col):
                     new_score, c = self.minimax(new_game, rival, depth-1, False)
                     new_score += self.position_score(col)
                     if new_score > score:
                         score = new_score
                         column = col
-                if depth == self.depth:
-                    LOGGER.info("MAX: col: {} score: {}".format( col+1, new_score))
-            if depth == self.depth:
-                LOGGER.info("CHOOSEN: col: {} score: {}".format( column+1, score))
-                LOGGER.info("-"*30)
+                if depth == 4:
+                    LOGGER.info("col: {} score: {}".format( col+1, score))
             return score, column
         # minimizing player (the other player)
         else:
@@ -92,11 +87,15 @@ class MinMaxPlayer(Player):
     #=================================
     # get a score of a block of 4
     #=================================
-    def block_score(self, block, rival):
+    def block_score(self, block):
         score = 0
+        if self.id == 1:
+            rival = 2
+        else:
+            rival = 1
 
-        if block.count(rival.id) == 3 and block.count(0) == 1:
-            score -= 300
+        if block.count(rival) == 3 and block.count(0) == 1:
+            score -= 200
 
         elif block.count(self.id) == 3 and block.count(0) == 1:
             score += 20
@@ -110,7 +109,7 @@ class MinMaxPlayer(Player):
     #=================================
     # get the score of the full board
     #=================================
-    def board_score(self, game, rival):
+    def board_score(self, game):
 
         score = 0
 
@@ -118,24 +117,24 @@ class MinMaxPlayer(Player):
         for r in range(game.ROWNUM):
             for c in range(game.COLNUM - 3):
                 block = list(game.board[r, c:c + 4])
-                score += self.block_score(block, rival)
+                score += self.block_score(block)
 
         # vertical
         for c in range(game.COLNUM):
             for r in range(game.ROWNUM - 3):
                 block = list(game.board[r:r + 4, c])
-                score += self.block_score(block, rival)
+                score += self.block_score(block)
 
         # diagonal
         for r in reversed(range(3, game.ROWNUM)):
             for c in range(game.COLNUM - 3):
                 block = [game.board[r - i, c + i] for i in range(4)]
-                score += self.block_score(block, rival)
+                score += self.block_score(block)
 
         for r in reversed(range(3, game.ROWNUM)):
             for c in reversed(range(3, game.COLNUM)):
                 block = [game.board[r - i, c - i] for i in range(4)]
-                score += self.block_score(block, rival)
+                score += self.block_score(block)
 
         return score
 
@@ -153,6 +152,6 @@ class MinMaxPlayer(Player):
     #=================================
     def best_move(self, game, rival):
 
-        score, column = self.minimax(game, rival, self.depth, True)
+        score, column = self.minimax(game, rival,  4, True)
 
         return self.move(column, game)
