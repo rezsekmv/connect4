@@ -61,25 +61,3 @@ class Game:
 
         return -1
 
-
-    #=================================
-    # draws the entire game
-    #=================================
-    def draw(self, win, p1, p2):
-        pygame.draw.rect(win, BLUE, self.rect)
-        x_gap = int(self.rect[2] / (self.COLNUM + 1))
-        y_gap = int(self.rect[3] / (self.ROWNUM + 1))
-
-        for i in range(self.COLNUM):
-            for j in range(self.ROWNUM):
-                item = self.board[j, i]
-
-                if item == 0:
-                    pygame.draw.circle(win, GREY, (self.rect[0] + (i + 1) * x_gap, self.rect[1] + (j + 1) * y_gap),
-                                       self.radius)
-                elif item == p1.id:
-                    p1.draw(win, (self.rect[0] + (i + 1) * x_gap, self.rect[1] + (j + 1) * y_gap), self.radius )
-
-                elif item == p2.id:
-                    p2.draw(win, (self.rect[0] + (i + 1) * x_gap, self.rect[1] + (j + 1) * y_gap), self.radius )
-

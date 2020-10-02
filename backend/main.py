@@ -1,12 +1,7 @@
+from draw import *
+
 from minmax import *
-
 import time
-
-def draw(win, game, p1, p2):
-    game.draw(win, p1, p2)
-
-    pygame.display.update()
-
 
 def get_colnum(game):
     col = None
@@ -18,12 +13,7 @@ def get_colnum(game):
 def main():
 
     # init
-    pygame.init()
     game_over = False
-
-    window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-    pygame.display.set_caption("Connect4")
-    window.fill(BACKGROUND)
 
     game = Game()
     p1 = Player(1, RED)
@@ -31,7 +21,7 @@ def main():
     next_player = p1
     rival = p2
 
-    draw(window, game, p1, p2)
+    draw_game(window, game, p1, p2)
 
     while not game_over:
         for event in pygame.event.get():
@@ -69,9 +59,7 @@ def main():
             print("P2 WON")
             game_over = True
 
-        draw(window, game, p1, p2)
-        #input("Enter for next move")
+        draw_game(window, game, p1, p2)
 
-    #time.sleep(3)
     input("Finished...")
 main()
