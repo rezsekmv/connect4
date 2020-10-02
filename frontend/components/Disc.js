@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View, Platform} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import { windowWidth, windowHeight, COLNUM, ROWNUM } from '../Constants.js';
 
 export default class Disc extends React.Component {
