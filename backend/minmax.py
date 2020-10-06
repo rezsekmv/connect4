@@ -17,9 +17,8 @@ LOGGER.addHandler(stream)
 # =================================
 class MinMaxPlayer(Player):
 
-
-    def __init__(self, id, color):
-        super().__init__(id, color)
+    def __init__(self, id):
+        super().__init__(id)
         self.depth = 4
 
     #=================================

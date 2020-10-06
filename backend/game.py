@@ -1,5 +1,3 @@
-from constants import *
-
 import numpy
 
 class Game:
