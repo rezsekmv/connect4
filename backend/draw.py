@@ -18,9 +18,9 @@ def draw_game(win, game, p1, p2):
     rect = (50, 150, 700, 600)
     radius = 30
 
-    pygame.draw.rect(win, BLUE, game.rect)
-    x_gap = int(game.rect[2] / (game.COLNUM + 1))
-    y_gap = int(game.rect[3] / (game.ROWNUM + 1))
+    pygame.draw.rect(win, BLUE, rect)
+    x_gap = int(rect[2] / (game.COLNUM + 1))
+    y_gap = int(rect[3] / (game.ROWNUM + 1))
 
     for i in range(game.COLNUM):
         for j in range(game.ROWNUM):
