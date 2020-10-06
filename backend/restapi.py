@@ -1,5 +1,7 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
+
+from game import *
 
 def init_api():
     app = Flask(__name__)
@@ -8,20 +10,21 @@ def init_api():
 
 class RestApi(Resource):
 
-    def __init__(self):
-        self.game = 1
-
     def get(self):
-        self.game += 1
-        return {'board': self.game}
+        return {'get': 'req'}
 
+    # curl -H "Content-Type: application/json" -X POST -d '@data.json'  http://localhost:5000/
     def post(self):
         json = request.get_json()
-        json.key1 += 1
         return json, 201
 
+    def json_to_game(self, json):
+        game = Game()
+        game.board = json.board
+
+
 def add_resources(api):
-    api.add_resource(RestApi, '/')
+    api.add_resource(RestApi, '/asd')
 
 def run_api(app):
     app.run(debug=True)
