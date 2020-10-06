@@ -1,6 +1,3 @@
-from constants import *
-
-import pygame
 import numpy
 
 class Game:
@@ -9,9 +6,6 @@ class Game:
         self.ROWNUM = 6
         self.COLNUM = 7
         self.board = numpy.zeros((self.ROWNUM, self.COLNUM))
-        self.rect = (50, 150, 700, 600)
-        self.radius = 30
-
 
     #=================================
     # place a players circle
