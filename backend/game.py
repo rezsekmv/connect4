@@ -12,7 +12,7 @@ class Game:
     #=================================
     def place(self, player, column):
         for i in reversed(range(self.ROWNUM)):
-            if self.board[i, column] == 0:
+            if self.board[i, column].any() == 0:
                 self.board[i, column] = player.id
                 return True
         return False

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { StyleSheet, View, Platform } from 'react-native';
+import { StyleSheet, View, Platform, TouchableOpacity } from 'react-native';
 import Disc from './Disc';
 import { windowWidth, windowHeight, COLNUM, ROWNUM, webWidth, webHeigth} from '../Constants.js';
 
@@ -10,13 +10,59 @@ export default class Game extends React.Component {
     super(props);
 
     this.state = { board: [
-      [ [], [], [], [], [], [], [] ],
-      [ [], [], [], [], [], [], [] ],
-      [ [], [], [], [], [], [], [] ],
-      [ [], [], [], [], [], [], [] ],
-      [ [], [], [], [], [], [], [] ],
-      [ [], [], [], [], [], [], [] ],
+      [ 0, 0, 0, 0, 0, 0, 0 ],
+      [ 0, 0, 0, 0, 0, 0, 0 ],
+      [ 0, 0, 0, 0, 0, 0, 0 ],
+      [ 0, 0, 0, 0, 0, 0, 0 ],
+      [ 0, 0, 0, 0, 0, 0, 0 ],
+      [ 0, 0, 0, 0, 0, 0, 0 ],
     ]};
+  }
+
+
+
+  getBoardFromApi = async (col) => {
+    return await fetch('http://localhost:5000/move', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        human: 1,
+        ai: 2,
+        column: col,
+        board: this.state.board
+      })
+    })
+      .then((response) => response.json())
+      .then( (json) => this.setState({board: json.board}))
+      .catch((error) => {
+        console.error(error);
+      });
+    };
+
+  getRow(col) {
+    let rowNum = -1;
+    this.state.board.map( (r, i) => {
+      r.map( (d, j) => {
+        if (col === j && d === 0)
+          rowNum = i
+      });
+    })
+    return rowNum
+  }
+
+  async handleMoveClick(col) {
+    let row = this.getRow(col);
+    let newboard = this.state.board;
+
+    console.log('row: ' + row + ' col: ' + col);
+    if (row === -1)
+      return;
+    newboard[row][col] = 1;
+    this.setState({ board: newboard });
+    await this.getBoardFromApi(col);
   }
 
   renderRow(row, index) {
@@ -25,7 +71,9 @@ export default class Game extends React.Component {
       {row.map( (d, i) => {
         return (
         <View style={styles.grid} key={i}>
-          <Disc/>  
+          <TouchableOpacity onPress={() => this.handleMoveClick(i)}>
+            <Disc value={d}/>
+          </TouchableOpacity>  
         </View>)
       })}
     </View>

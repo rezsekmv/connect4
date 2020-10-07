@@ -9,8 +9,16 @@ export default class Disc extends React.Component {
     }
 
     render() {
+        let disc;
+        if (this.props.value === 1)
+            disc = <View style={[this.styles.dot, this.styles.red]}/>;
+        else if (this.props.value === 2) 
+            disc = <View style={[this.styles.dot, this.styles.yellow]}/>;
+        else
+            disc = <View style={[this.styles.dot, this.styles.empty]}/>;
+    
         return (
-            <View style={this.styles.dot}/>
+            disc
         )
     }
 
@@ -24,9 +32,15 @@ export default class Disc extends React.Component {
                 width: this.radius,
                 height: this.radius,
                 borderRadius: this.radius/2,
-
-                backgroundColor: 'grey',
-                
+            },
+            empty: {
+                backgroundColor: 'grey'
+            },
+            red: {
+                backgroundColor: 'red'
+            },
+            yellow : {
+                backgroundColor: 'yellow'
             }
         }
     )
