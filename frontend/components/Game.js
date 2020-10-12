@@ -1,28 +1,30 @@
-import React, {useState} from 'react';
-import { StyleSheet, View, Platform, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, Platform, TouchableOpacity, Text } from 'react-native';
 import Disc from './Disc';
-import { windowWidth, windowHeight, COLNUM, ROWNUM, webWidth, webHeigth} from '../Constants.js';
+import { windowWidth, windowHeight, COLNUM, ROWNUM, URLmove} from '../Constants.js';
 
 
 export default class Game extends React.Component {  
-  
+
   constructor(props) {
     super(props);
 
-    this.state = { board: [
-      [ 0, 0, 0, 0, 0, 0, 0 ],
-      [ 0, 0, 0, 0, 0, 0, 0 ],
-      [ 0, 0, 0, 0, 0, 0, 0 ],
-      [ 0, 0, 0, 0, 0, 0, 0 ],
-      [ 0, 0, 0, 0, 0, 0, 0 ],
-      [ 0, 0, 0, 0, 0, 0, 0 ],
-    ]};
+    this.state = {
+      board: [
+        [ 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0 ],
+      ],
+      inputDisabled: false,
+      wonBy: -1
+    };
   }
 
-
-
-  getBoardFromApi = async (col) => {
-    return await fetch('http://localhost:5000/move', {
+  getMoveFromApi = async (col) => {
+    return await fetch(URLmove, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -36,9 +38,9 @@ export default class Game extends React.Component {
       })
     })
       .then((response) => response.json())
-      .then( (json) => this.setState({board: json.board}))
+      .then( (json) => { return json; } )
       .catch((error) => {
-        console.error(error);
+        console.error('Can not reach backend');
       });
     };
 
@@ -54,15 +56,29 @@ export default class Game extends React.Component {
   }
 
   async handleMoveClick(col) {
+    this.setState({ inputDisabled: true })
     let row = this.getRow(col);
     let newboard = this.state.board;
 
-    console.log('row: ' + row + ' col: ' + col);
+    //if the column is full
     if (row === -1)
       return;
+
+    //local move (on phone)
     newboard[row][col] = 1;
     this.setState({ board: newboard });
-    await this.getBoardFromApi(col);
+    
+    //remote move (by the ai)
+    let json = await this.getMoveFromApi(col);
+    if (typeof json === 'undefined')
+      return;
+    this.setState({ board: json.board, wonBy: json.wonBy})    
+
+    //checks if the game is over
+    if (this.state.wonBy === -1) {
+      this.setState({ inputDisabled: false })
+    }
+
   }
 
   renderRow(row, index) {
@@ -71,7 +87,7 @@ export default class Game extends React.Component {
       {row.map( (d, i) => {
         return (
         <View style={styles.grid} key={i}>
-          <TouchableOpacity onPress={() => this.handleMoveClick(i)}>
+          <TouchableOpacity onPress={() => this.handleMoveClick(i)} disabled={this.state.inputDisabled}>
             <Disc value={d}/>
           </TouchableOpacity>  
         </View>)
@@ -86,6 +102,9 @@ export default class Game extends React.Component {
         {this.state.board.map( (e, i) => {
           return this.renderRow(e, i)
         })}
+        { this.state.wonBy !== -1 &&
+          <Text style={styles.gameover}>Game Over!</Text>
+        }
       </View>
     );
   }
@@ -102,9 +121,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   grid: {
-    //responsive to srceen pixels
-    width: windowWidth/COLNUM,
-    height: windowHeight/ROWNUM,
+    //responsive to srceen pixels (on ios width and height switched)
+    width: Platform.OS === 'ios' ? windowHeight/COLNUM : windowWidth/COLNUM,
+    height: Platform.OS === 'ios' ? windowWidth/ROWNUM : windowHeight/ROWNUM,
 
     //center horizontal
     alignItems: 'center',
@@ -115,6 +134,13 @@ const styles = StyleSheet.create({
     
     borderLeftWidth: 1,
     borderRightWidth: 1
+  },
+  gameover: {
+    position: 'absolute',
+    textAlign: 'center',
+    color: 'lightgreen',
+    fontWeight: 'bold',
+    fontSize: 70
   }
 
 });

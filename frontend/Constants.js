@@ -7,3 +7,8 @@ export const COLNUM = 7;
 
 export const webWidth = 80;
 export const webHeigth = 50;
+
+export const URLmove = 'http://localhost:5000/move';
+//export const URLmove = 'http://152.66.239.241:5000/move';
+
+export const playerValues = ['Human', 'Minmax'];
