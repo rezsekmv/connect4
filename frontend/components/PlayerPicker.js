@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import {Picker, View, StyleSheet} from 'react-native';
 import { playerValues } from '../Constants';
 
-export default function PlayerPicker() {
+export default function PlayerPicker(props) {
     const [selected, setSelected] = useState(playerValues[0])
-
+    
     return (
         <View style={styles.view}>
             <Picker
                 selectedValue={selected}
                 style={styles.picker}
-                onValueChange={(itemValue) => setSelected(itemValue)}>
+                onValueChange={(itemValue) => {
+                    setSelected(itemValue)
+                    props.picker(props.player, itemValue)
+                }}>
                 
                 {playerValues.map( (v, k) => {
                     return (<Picker.Item key={k} label={v} values={v}></Picker.Item>)

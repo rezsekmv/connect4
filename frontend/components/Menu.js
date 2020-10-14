@@ -2,25 +2,28 @@ import React from 'react';
 import { StyleSheet, View, Text, Button, ImageBackground, TouchableOpacity} from 'react-native';
 
 import PlayerPicker from './PlayerPicker';
-import { windowWidth, windowHeight } from '../Constants';
+import { playerValues } from '../Constants';
 
 export default class Menu extends React.Component {  
 
     constructor(props) {
         super(props)
         this.state = {
-            player1: 'human',
-            player2: 'human'
+            player1: playerValues[0],
+            player2: playerValues[0]
         }
     }
 
-    handlePlayerState(p1s, p2s) {
-        this.setState({player1: p1s, player2: p2s});
+    handlePlayerState(player, state) {
+        this.setState({[player]: state});
     }
 
-    handleStart() {
-        console.log('p1:', this.state.player1)
-        console.log('p2:', this.state.player2)
+    handleStart() {                    
+        
+        this.props.navigation.push('Game', {
+            player1: this.state.player1,
+            player2: this.state.player2
+          })
     }
 
     //    <ImageBackground source={require('../assets/images/c4_background.jpg')} style={styles.image} >
@@ -33,11 +36,11 @@ export default class Menu extends React.Component {
                 <View style={styles.playerContainer}>
                     <View style={styles.player}>
                         <Text style={styles.playerText}>Player One</Text>
-                        <PlayerPicker/>
+                        <PlayerPicker player={'player1'} picker={(p, s) => this.handlePlayerState(p, s)}/>
                     </View>
                     <View style={styles.player}>
                         <Text style={styles.playerText}>Player Two</Text>
-                        <PlayerPicker/>
+                        <PlayerPicker player={'player2'} picker={(p, s) => this.handlePlayerState(p, s)}/>
                     </View>
                 </View>
                 <View style={styles.startContainer}>

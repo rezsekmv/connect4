@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Platform, TouchableOpacity, Text } from 'react-native';
 import Disc from './Disc';
-import { windowWidth, windowHeight, COLNUM, ROWNUM, URLmove} from '../Constants.js';
+import { windowWidth, windowHeight, COLNUM, ROWNUM, URLmove, URLcheckwin} from '../Constants.js';
 
 
 export default class Game extends React.Component {  
@@ -18,12 +18,24 @@ export default class Game extends React.Component {
         [ 0, 0, 0, 0, 0, 0, 0 ],
         [ 0, 0, 0, 0, 0, 0, 0 ],
       ],
+      player1: this.props.route.params.player1,
+      player2: this.props.route.params.player2,
+      next_player: 1,
+      wonBy: -1,
       inputDisabled: false,
-      wonBy: -1
     };
+    
+    
+    //2 ai-s against each other START it immediately  
+    if (this.state.player1 !== 'human' && this.state.player2 !== 'human') {
+      this.aiGame()
+    }
+    else if (this.state.player1 !== 'human') {
+      this.aiMove()
+    }
   }
 
-  getMoveFromApi = async (col) => {
+  getMoveFromApi = async () => {
     return await fetch(URLmove, {
       method: 'POST',
       headers: {
@@ -31,18 +43,36 @@ export default class Game extends React.Component {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        human: 1,
-        ai: 2,
-        column: col,
+        player1: this.state.player1,
+        player2: this.state.player2,
+        next_player: this.state.next_player,
         board: this.state.board
       })
     })
       .then((response) => response.json())
-      .then( (json) => { return json; } )
       .catch((error) => {
         console.error('Can not reach backend');
       });
     };
+
+
+    checkWinFromApi = async () => {
+      return await fetch(URLcheckwin, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          board: this.state.board
+        })  
+      })
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error('Can not reach backend');
+        });
+      };
+  
 
   getRow(col) {
     let rowNum = -1;
@@ -55,8 +85,7 @@ export default class Game extends React.Component {
     return rowNum
   }
 
-  async handleMoveClick(col) {
-    this.setState({ inputDisabled: true })
+  async humanMove(col) {
     let row = this.getRow(col);
     let newboard = this.state.board;
 
@@ -65,20 +94,66 @@ export default class Game extends React.Component {
       return;
 
     //local move (on phone)
-    newboard[row][col] = 1;
+    newboard[row][col] = this.state.next_player;
     this.setState({ board: newboard });
-    
+
+    let json = await this.checkWinFromApi();
+    this.setState({ wonBy: json.wonBy });
+
+    this.state.next_player === 1 ? this.setState( {next_player: 2} ) : this.setState( {next_player: 1} )
+  }
+
+  async aiMove() {
     //remote move (by the ai)
-    let json = await this.getMoveFromApi(col);
+    let json = await this.getMoveFromApi();
     if (typeof json === 'undefined')
       return;
-    this.setState({ board: json.board, wonBy: json.wonBy})    
+    this.setState({ board: json.board, wonBy: json.wonBy, next_player: json.next_player})    
+  }
+
+  async aiGame() {
+    await this.aiMove()
+    if (this.state.wonBy === -1) {
+      this.aiGame()
+    }
+  }
+
+  async humanVsAi(col) {
+    //next_player is player1 
+    if (this.state.next_player === 1) {
+      //player1 is human
+      if (this.state.player1 === 'human') {
+        await this.humanMove(col)
+        this.aiMove()
+      }
+    }
+    else {
+      if (this.state.player2 === 'human') {
+        await this.humanMove(col)
+        this.aiMove()
+      }
+    }
+  }
+
+
+  async handleMoveClick(col) {  
+    this.setState({ inputDisabled: true })
+
+    //2 human against each other  
+    if (this.state.player1 === 'human' && this.state.player2 === 'human') {
+      this.humanMove(col)
+    }
+
+    if ((this.state.player1 === 'human' && this.state.player2 !== 'human')
+    || (this.state.player1 !== 'human' && this.state.player2 === 'human')) {
+      this.humanVsAi(col)
+    }
 
     //checks if the game is over
     if (this.state.wonBy === -1) {
       this.setState({ inputDisabled: false })
     }
-
+    this.setState({ inputDisabled: false })
   }
 
   renderRow(row, index) {
@@ -102,8 +177,11 @@ export default class Game extends React.Component {
         {this.state.board.map( (e, i) => {
           return this.renderRow(e, i)
         })}
-        { this.state.wonBy !== -1 &&
-          <Text style={styles.gameover}>Game Over!</Text>
+        { this.state.wonBy === 1 &&
+          <Text style={styles.gameover}>Player1 (RED) won!</Text>
+        }
+        { this.state.wonBy === 2 &&
+          <Text style={styles.gameover}>Player2 (YELLOW) won!</Text>
         }
       </View>
     );
