@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Platform, TouchableOpacity, Text } from 'react-native';
 import Disc from './Disc';
-import { windowWidth, windowHeight, COLNUM, ROWNUM, URLmove, URLcheckwin} from '../Constants.js';
+import { windowWidth, windowHeight, COLNUM, ROWNUM, URLmove, URLcheckwin, padding} from '../Constants.js';
 
 
 export default class Game extends React.Component {  
@@ -26,7 +26,7 @@ export default class Game extends React.Component {
     };
     
     
-    //2 ai-s against each other START it immediately  
+    //2 ai-s against each other START it immediately
     if (this.state.player1 !== 'human' && this.state.player2 !== 'human') {
       this.aiGame()
     }
@@ -153,7 +153,10 @@ export default class Game extends React.Component {
     if (this.state.wonBy === -1) {
       this.setState({ inputDisabled: false })
     }
-    this.setState({ inputDisabled: false })
+  }
+
+  goToMenu() {
+    this.props.navigation.push('Menu');
   }
 
   renderRow(row, index) {
@@ -182,6 +185,11 @@ export default class Game extends React.Component {
         }
         { this.state.wonBy === 2 &&
           <Text style={styles.gameover}>Player2 (YELLOW) won!</Text>
+        }
+        { this.state.wonBy !== -1 &&
+            <TouchableOpacity style={styles.reset} onPress={() => this.goToMenu()}>
+            <Text style={styles.resetText}>Go to Menu</Text>
+        </TouchableOpacity>
         }
       </View>
     );
@@ -215,10 +223,25 @@ const styles = StyleSheet.create({
   },
   gameover: {
     position: 'absolute',
+    top: 200,
     textAlign: 'center',
     color: 'lightgreen',
     fontWeight: 'bold',
     fontSize: 70
+  },
+  reset: {
+    position: 'absolute',
+    top: 400,
+    backgroundColor: 'brown',
+    ...padding(5, 10, 5, 10),
+    marginBottom: '1%',
+    alignItems: 'center',
+    borderRadius: 20
+  },
+  resetText: {
+    color: 'yellow',
+    fontSize: 20,
+    fontWeight: 'bold',
   }
 
 });

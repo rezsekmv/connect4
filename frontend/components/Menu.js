@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text, Button, ImageBackground, TouchableOpacity} from 'react-native';
 
 import PlayerPicker from './PlayerPicker';
-import { playerValues } from '../Constants';
+import { playerValues, padding } from '../Constants';
 
 export default class Menu extends React.Component {  
 
@@ -52,15 +52,6 @@ export default class Menu extends React.Component {
         )
     }
 }
-
-function padding(a, b, c, d) {
-    return {
-      paddingTop: a+'%',
-      paddingRight: b ? b+'%' : a+'%',
-      paddingBottom: c ? c+'%' : a+'%',
-      paddingLeft: d ? d+'%' : (b ? b+'%' : a+'%')
-    }
-  }
 
 const styles = StyleSheet.create({
     base: {

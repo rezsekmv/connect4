@@ -14,3 +14,12 @@ export const URLmove = 'http://152.66.239.241:5000/move';
 export const URLcheckwin = 'http://152.66.239.241:5000/checkwin';
 
 export const playerValues = ['human', 'minmax'];
+
+export function padding(a, b, c, d) {
+    return {
+      paddingTop: a+'%',
+      paddingRight: b ? b+'%' : a+'%',
+      paddingBottom: c ? c+'%' : a+'%',
+      paddingLeft: d ? d+'%' : (b ? b+'%' : a+'%')
+    }
+  }
