@@ -17,10 +17,9 @@ LOGGER.addHandler(stream)
 # =================================
 class MinMaxPlayer(Player):
 
-
-    def __init__(self, id, color):
-        super().__init__(id, color)
-        self.depth = 4
+    def __init__(self, id):
+        super().__init__(id)
+        self.depth = 2
 
     #=================================
     # place a circle on the board
@@ -37,7 +36,7 @@ class MinMaxPlayer(Player):
     #=================================
     # The recursive minimax algorithym
     #=================================
-    def minimax(self, game, rival, depth, maximizing_player):
+    def minimax(self, game, rival, depth, alpha, beta, maximizing_player):
 
         # if the game is finished
         end = self.is_terminal_node(game)
@@ -62,11 +61,16 @@ class MinMaxPlayer(Player):
                 new_game.board = game.board.copy()
                 new_score = 0
                 if new_game.place(self, col):
-                    new_score, c = self.minimax(new_game, rival, depth-1, False)
+                    new_score, c = self.minimax(new_game, rival, depth-1, alpha, beta, False)
                     new_score += self.position_score(col)
                     if new_score > score:
                         score = new_score
                         column = col
+                    '''# a-b phruning
+                    alpha = max(alpha, new_score)
+                    if beta <= alpha:
+                        break'''
+
                 if depth == self.depth:
                     LOGGER.info("MAX: col: {} score: {}".format( col+1, new_score))
             if depth == self.depth:
@@ -81,11 +85,15 @@ class MinMaxPlayer(Player):
                 new_game = Game()
                 new_game.board = game.board.copy()
                 if new_game.place(rival, col):
-                    new_score, c = self.minimax(new_game, rival, depth-1, True)
+                    new_score, c = self.minimax(new_game, rival, depth-1, alpha, beta, True)
                     new_score -= self.position_score(col)
                     if new_score < score:
                         score = new_score
                         column = col
+                    '''# a-b phruning
+                    beta = min(beta, new_score)
+                    if beta <= alpha:
+                        break'''
             return score, column
 
 
@@ -153,6 +161,6 @@ class MinMaxPlayer(Player):
     #=================================
     def best_move(self, game, rival):
 
-        score, column = self.minimax(game, rival, self.depth, True)
+        score, column = self.minimax(game, rival, self.depth, -math.inf, math.inf, True)
 
         return self.move(column, game)
