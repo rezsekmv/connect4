@@ -17,9 +17,10 @@ LOGGER.addHandler(stream)
 # =================================
 class MinMaxPlayer(Player):
 
-    def __init__(self, id):
-        super().__init__(id)
-        self.depth = 2
+    def __init__(self, id, color=None):
+        super().__init__(id, color)
+        self.color = color
+        self.depth = 4
 
     #=================================
     # place a circle on the board
