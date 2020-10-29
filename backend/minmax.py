@@ -6,7 +6,7 @@ import math
 import logging
 
 LOGGER = logging.getLogger("score")
-LOGGER.setLevel(logging.ERROR)
+LOGGER.setLevel(logging.INFO)
 stream = logging.StreamHandler()
 handler = logging.Formatter('%(name)s %(levelname)s: %(message)s')
 stream.setFormatter(handler)
@@ -20,7 +20,7 @@ class MinMaxPlayer(Player):
     def __init__(self, id, color=None):
         super().__init__(id, color)
         self.color = color
-        self.depth = 3
+        self.depth = 6
 
     #=================================
     # place a circle on the board
@@ -33,6 +33,18 @@ class MinMaxPlayer(Player):
     # =================================
     def is_terminal_node(self, game):
         return game.isFinished()
+
+    # =================================
+    # Arrange columns (BEST columns first)
+    # =================================
+    def loop_order(self, game):
+        columns = [i for i in range(game.COLNUM)]
+        f = [abs(x-(game.COLNUM//2)) for x in range(game.COLNUM)]
+
+        _, order = zip(*sorted(zip(f, columns)))
+        return list(order)
+
+
 
     #=================================
     # The recursive minimax algorithym
@@ -57,7 +69,7 @@ class MinMaxPlayer(Player):
         if maximizing_player:
             score = -math.inf
             column = random.randint(0, 6)
-            for col in range(game.COLNUM):
+            for col in self.loop_order(game):
                 new_game = Game()
                 new_game.board = game.board.copy()
                 new_score = 0
@@ -67,10 +79,10 @@ class MinMaxPlayer(Player):
                     if new_score > score:
                         score = new_score
                         column = col
-                    '''# a-b phruning
+                    # a-b phruning
                     alpha = max(alpha, score)
                     if beta <= alpha:
-                        break'''
+                        break
 
                 if depth == self.depth:
                     LOGGER.info("MAX: col: {} score: {}".format( col+1, new_score))
@@ -82,7 +94,7 @@ class MinMaxPlayer(Player):
         else:
             score = math.inf
             column = random.randint(0,6)
-            for col in range(game.COLNUM):
+            for col in self.loop_order(game):
                 new_game = Game()
                 new_game.board = game.board.copy()
                 if new_game.place(rival, col):
@@ -91,10 +103,10 @@ class MinMaxPlayer(Player):
                     if new_score < score:
                         score = new_score
                         column = col
-                    '''# a-b phruning
-                    beta = min(beta, new_score)
+                    # a-b phruning
+                    beta = min(beta, score)
                     if beta <= alpha:
-                        break'''
+                        break
             return score, column
 
 
@@ -161,6 +173,12 @@ class MinMaxPlayer(Player):
     # find the best move based on score
     #=================================
     def best_move(self, game, rival):
+
+        if game.board.tolist().count(0) == 42-13:
+            self.depth = 9
+
+        if game.board.tolist().count(0) == 42-15:
+            self.depth = 30
 
         score, column = self.minimax(game, rival, self.depth, -math.inf, math.inf, True)
 
