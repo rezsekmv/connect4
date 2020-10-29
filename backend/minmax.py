@@ -6,7 +6,7 @@ import math
 import logging
 
 LOGGER = logging.getLogger("score")
-LOGGER.setLevel(logging.INFO)
+LOGGER.setLevel(logging.ERROR)
 stream = logging.StreamHandler()
 handler = logging.Formatter('%(name)s %(levelname)s: %(message)s')
 stream.setFormatter(handler)
@@ -20,7 +20,7 @@ class MinMaxPlayer(Player):
     def __init__(self, id, color=None):
         super().__init__(id, color)
         self.color = color
-        self.depth = 4
+        self.depth = 3
 
     #=================================
     # place a circle on the board
@@ -56,7 +56,7 @@ class MinMaxPlayer(Player):
         # maximizing player (AI)
         if maximizing_player:
             score = -math.inf
-            column = random.randint(0,6)
+            column = random.randint(0, 6)
             for col in range(game.COLNUM):
                 new_game = Game()
                 new_game.board = game.board.copy()
@@ -68,7 +68,7 @@ class MinMaxPlayer(Player):
                         score = new_score
                         column = col
                     '''# a-b phruning
-                    alpha = max(alpha, new_score)
+                    alpha = max(alpha, score)
                     if beta <= alpha:
                         break'''
 

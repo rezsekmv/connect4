@@ -1,65 +1,29 @@
-from draw import *
+import os
 
-from minmax import *
-import time
+from ai import *
 
-def get_colnum(game):
-    col = None
-    while col is None or not col.isnumeric() or int(col)-1 < 0 or game.COLNUM <= int(col)-1:
-        col = input("Player1: ")
-    return int(col)
+
+def run(config_file):
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                                neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                                config_file)
+
+    p = neat.Population(config)
+
+    p.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    p.add_reporter(stats)
+
+    winner = p.run(eval_genomes, 50)
+
+    # show final stats
+    print('\nBest genome:\n{!s}'.format(winner))
 
 
 def main():
-
-    # init
-    game_over = False
-
-    game = Game()
-    p1 = Player(1, RED)
-    p2 = MinMaxPlayer(2, YELLOW)
-    next_player = p1
-    rival = p2
-
-    draw_game(window, game, p1, p2)
-
-    while not game_over:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                game_over = True
-                pygame.quit()
-                quit()
-                break
+    local_dir = os.path.dirname(__file__)
+    config_path = os.path.join(local_dir, 'neat-config.txt')
+    run(config_path)
 
 
-        placed = False
-        if type(next_player) is MinMaxPlayer:
-            placed = next_player.best_move(game, rival)
-        elif type(next_player) is Player:
-            col = get_colnum(game)
-            placed = next_player.move(col-1, game)
-
-        if placed:
-            if next_player == p1:
-                next_player = p2
-                rival = p1
-            elif next_player == p2:
-                next_player = p1
-                rival = p2
-
-        win = game.isFinished()
-
-        if win == 0:
-            print("DRAW")
-            game_over = True
-        elif win == p1.id:
-            print("P1 WON")
-            game_over = True
-        elif win == p2.id:
-            print("P2 WON")
-            game_over = True
-
-        draw_game(window, game, p1, p2)
-
-    input("Finished...")
 main()
