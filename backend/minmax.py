@@ -1,16 +1,10 @@
 from player import *
 from game import *
+from logger import *
 
 import random
 import math
-import logging
 
-LOGGER = logging.getLogger("score")
-LOGGER.setLevel(logging.INFO)
-stream = logging.StreamHandler()
-handler = logging.Formatter('%(name)s %(levelname)s: %(message)s')
-stream.setFormatter(handler)
-LOGGER.addHandler(stream)
 
 # =================================
 # This is the class for the MiniMax algorithym
@@ -20,7 +14,7 @@ class MinMaxPlayer(Player):
     def __init__(self, id, color=None):
         super().__init__(id, color)
         self.color = color
-        self.depth = 6
+        self.depth = 3
 
     #=================================
     # place a circle on the board
@@ -174,12 +168,11 @@ class MinMaxPlayer(Player):
     #=================================
     def best_move(self, game, rival):
 
-        if game.board.tolist().count(0) == 42-13:
+        '''if game.board.tolist().count(0) == 42-13:
             self.depth = 9
 
         if game.board.tolist().count(0) == 42-15:
-            self.depth = 30
+            self.depth = 30'''
 
         score, column = self.minimax(game, rival, self.depth, -math.inf, math.inf, True)
-
         return self.move(column, game)

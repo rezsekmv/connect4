@@ -1,6 +1,6 @@
 class Player:
 
-    def __init__(self, id, color):
+    def __init__(self, id, color=None):
         self.id = id
         self.color = color
 
