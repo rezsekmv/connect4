@@ -14,7 +14,7 @@ class MinMaxPlayer(Player):
     def __init__(self, id, color=None):
         super().__init__(id, color)
         self.color = color
-        self.depth = 6
+        self.depth = 3
 
     #=================================
     # place a circle on the board
@@ -74,9 +74,9 @@ class MinMaxPlayer(Player):
                         score = new_score
                         column = col
                     # a-b phruning
-                    alpha = max(alpha, score)
-                    if beta <= alpha:
-                        break
+                    # alpha = max(alpha, score)
+                    # if beta <= alpha:
+                    #     break
 
                 if depth == self.depth:
                     LOGGER.info("MAX: col: {} score: {}".format( col+1, new_score))
@@ -95,9 +95,9 @@ class MinMaxPlayer(Player):
                         score = new_score
                         column = col
                     # a-b phruning
-                    beta = min(beta, score)
-                    if beta <= alpha:
-                        break
+                    # beta = min(beta, score)
+                    # if beta <= alpha:
+                    #     break
             return score, column
 
 

@@ -1,7 +1,7 @@
 import copy
 
 from constants import *
-#from draw import *
+from draw import *
 from minmax import *
 from game import *
 from logger import *
@@ -85,7 +85,8 @@ def eval_genomes(genomes, config):
                 i -= 1
             i += 1
 
-        # if len(player_list)>0:
-        #     for i in range(len(player_list)):
-        #         draw_game(window, game_list[i], player_list[i], opponent)
-        #         pygame.time.delay(2000)
+
+        if len(player_list)>0:
+            for i in range(len(player_list)):
+                draw_game(window, game_list[i], player_list[i], opponent)
+                pygame.time.delay(2000)
