@@ -2,12 +2,12 @@ import numpy
 
 class Game:
 
-    def __init__(self, p1, p2, next_p = 1):
+    def __init__(self, p1=None, p2=None, next_p=None):
         self.ROWNUM = 6
         self.COLNUM = 7
         self.board = numpy.zeros((self.ROWNUM, self.COLNUM))
-        self.player1 = p1
-        self.player2 = p2
+        self.p1 = p1
+        self.p2 = p2
         self.next_player = next_p
 
     def __str__(self):
