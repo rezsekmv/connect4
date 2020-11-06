@@ -14,7 +14,7 @@ class MinMaxPlayer(Player):
     def __init__(self, id, color=None):
         super().__init__(id, color)
         self.color = color
-        self.depth = 3
+        self.depth = 6
 
     #=================================
     # place a circle on the board
@@ -80,9 +80,6 @@ class MinMaxPlayer(Player):
 
                 if depth == self.depth:
                     LOGGER.info("MAX: col: {} score: {}".format( col+1, new_score))
-            if depth == self.depth:
-                LOGGER.info("CHOOSEN: col: {} score: {}".format( column+1, score))
-                LOGGER.info("-"*30)
             return score, column
         # minimizing player (the other player)
         else:
@@ -175,4 +172,6 @@ class MinMaxPlayer(Player):
             self.depth = 30'''
 
         score, column = self.minimax(game, rival, self.depth, -math.inf, math.inf, True)
+        LOGGER.info("CHOOSEN: col: {} score: {}".format(column + 1, score))
+        LOGGER.info("-" * 30)
         return self.move(column, game)

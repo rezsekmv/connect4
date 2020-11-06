@@ -6,3 +6,6 @@ class Player:
 
     def move(self, column, game):
         return game.place(self, column)
+
+    def __str__(self):
+        return "{type} {id} {color}".format(type=type(self), id=self.id, color=self.color)
