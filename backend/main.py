@@ -37,7 +37,7 @@ def replay_genome(config_file, genome_path="winner.pickle"):
 def main():
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, 'neat-config.txt')
-    replay_genome(config_path)
+    run(config_path)
     input()
 
 

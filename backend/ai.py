@@ -1,92 +1,90 @@
-import copy
 
 from constants import *
-from draw import *
-from minmax import *
+# from draw import *
+from player import *
 from game import *
 from logger import *
 
 import neat
 
-def check_win(i, ai, opponent, fitness, game_list, genome_list):
+def check_win(game, fitness, genome_list):
     # check for win and fill genome fitnesses
-    win = game_list[i].isFinished()
+    win = game.isFinished()
     if win == 0:
         # if draw fitness is 50
-        genome_list[i].fitness = 50
+        genome_list[game.player1].fitness = 50
+        genome_list[game.player2].fitness = 50
         LOGGER.info("DRAW")
-    elif win == opponent.id:
-        genome_list[i].fitness = fitness
-        LOGGER.info("OPPONENT WON")
-    elif win == ai.id:
-        genome_list[i].fitness = 100 - fitness
-        LOGGER.info("AI WON")
+    elif win == game.next_player.id:
+        if game.next_player.id == 1:
+            genome_list[game.player1].fitness = 100 - fitness
+            genome_list[game.player2].fitness = fitness
+        if game.next_player.id == 2:
+            genome_list[game.player2].fitness = 100 - fitness
+            genome_list[game.player1].fitness = fitness
+        LOGGER.info("Game won by" + str(game.next_player.id))
 
     return not win == -1
 
 
 def eval_genomes(genomes, config):
-    network_list = []
-    player_list = []
     genome_list = []
-
+    network_list = []
     game_list = []
-    fitness = 0
 
-    # init
-    opponent = MinMaxPlayer(2, YELLOW)
+    fitness = 0
 
     for _, genome in genomes:
         genome.fitness = 0
         network = neat.nn.FeedForwardNetwork.create(genome, config)
-        network_list.append(network)
-        player_list.append(Player(1, RED))
+
         genome_list.append(genome)
+        network_list.append(network)
 
-        game_list.append(Game())
+    red1 = Player(1, RED)
+    yellow2 = Player(2, YELLOW)
 
+    length = len(genomes)
+    for i in range(length):
+        for j in range(length):
+            if i != j:
+                p1 = i
+                p2 = j
+                game_list.append(Game(p1, p2, red1))
 
-    while len(player_list) > 0:
+    while len(game_list) > 0:
+        # increase fitness
         fitness += 1
-        for i, ai in enumerate(player_list):
+
+        # AI move
+        for game in game_list:
 
             # 2nd try input = tuple(map(tuple, game.board))
-            input_nodes = tuple(game_list[i].board.reshape(1, -1)[0])
-            output_nodes = network_list[player_list.index(ai)].activate(input_nodes)
+            input_nodes = tuple(game.board.reshape(1, -1)[0])
+            output_nodes = [0,0,0,0,0,0,0]
+            if game.next_player == red1:
+                output_nodes = network_list[game.player1].activate(input_nodes)
+            if game.next_player == yellow2:
+                output_nodes = network_list[game.player2].activate(input_nodes)
 
             # set output neurons and MOVE
             placed = False
             while not placed:
                 best_column = output_nodes.index(max(output_nodes))
-                placed = ai.move(best_column, game_list[i])
+                placed = game.next_player.move(best_column, game)
                 output_nodes[best_column] = -2
 
-        i = 0
-        while i < len(player_list):
-            if check_win(i, player_list[i], opponent, fitness, game_list, genome_list):
-                player_list.pop(i)
-                network_list.pop(i)
-                genome_list.pop(i)
-                game_list.pop(i)
-                i -= 1
-            i += 1
+            # check for win and if the game is over take out from the list
+            if check_win(game, fitness, genome_list):
+                game_list.remove(game)
 
-        for i in range(len(player_list)):
-            # other player move
-            opponent.best_move(game_list[i], player_list[i])
-
-        i = 0
-        while i < len(player_list):
-            if check_win(i, player_list[i], opponent, fitness, game_list, genome_list):
-                player_list.pop(i)
-                network_list.pop(i)
-                genome_list.pop(i)
-                game_list.pop(i)
-                i -= 1
-            i += 1
+        if game.next_player == red1:
+            game.next_player = yellow2
+        if game.next_player == yellow2:
+            game.next_player = red1
 
 
-        if len(player_list)>0:
-            for i in range(len(player_list)):
-                draw_game(window, game_list[i], player_list[i], opponent)
-                pygame.time.delay(2000)
+        # if len(player_list)>0:
+        #     for i in range(len(player_list)):
+        #         draw_game(window, game_list[i], player_list[i], opponent)
+        #         pygame.time.delay(2000)
