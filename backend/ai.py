@@ -1,5 +1,6 @@
 import copy
 
+from constants import *
 from draw import *
 from minmax import *
 from game import *
@@ -7,7 +8,7 @@ from logger import *
 
 import neat
 
-def check_win(i, ai, opponent, fitness, game_list, genome_list, player_list, network_list):
+def check_win(i, ai, opponent, fitness, game_list, genome_list):
     # check for win and fill genome fitnesses
     win = game_list[i].isFinished()
     if win == 0:
@@ -21,13 +22,8 @@ def check_win(i, ai, opponent, fitness, game_list, genome_list, player_list, net
         genome_list[i].fitness = 100 - fitness
         LOGGER.info("AI WON")
 
-    if not win == -1:
-        player_list.pop(i)
-        network_list.pop(i)
-        genome_list.pop(i)
-        game_list.pop(i)
-
     return not win == -1
+
 
 def eval_genomes(genomes, config):
     network_list = []
@@ -38,21 +34,19 @@ def eval_genomes(genomes, config):
     fitness = 0
 
     # init
-    opponent = MinMaxPlayer(1, RED)
-    ai = Player(2, YELLOW)
+    opponent = MinMaxPlayer(2, YELLOW)
 
     for _, genome in genomes:
         genome.fitness = 0
         network = neat.nn.FeedForwardNetwork.create(genome, config)
         network_list.append(network)
-        player_list.append(copy.copy(ai))
+        player_list.append(Player(1, RED))
         genome_list.append(genome)
 
         game_list.append(Game())
 
 
     while len(player_list) > 0:
-        pygame.time.delay(2000)
         fitness += 1
         for i, ai in enumerate(player_list):
 
@@ -67,19 +61,31 @@ def eval_genomes(genomes, config):
                 placed = ai.move(best_column, game_list[i])
                 output_nodes[best_column] = -2
 
-            # draw
-            draw_game(window, game_list[i], opponent, ai)
+        i = 0
+        while i < len(player_list):
+            if check_win(i, player_list[i], opponent, fitness, game_list, genome_list):
+                player_list.pop(i)
+                network_list.pop(i)
+                genome_list.pop(i)
+                game_list.pop(i)
+                i -= 1
+            i += 1
 
-            if check_win(i, ai, opponent, fitness, game_list, genome_list, player_list, network_list):
-                continue
-
+        for i in range(len(player_list)):
             # other player move
-            placed = False
-            while not placed:
-                placed = opponent.best_move(game_list[i], ai)
+            opponent.best_move(game_list[i], player_list[i])
 
-            # draw
-            draw_game(window, game_list[i], opponent, ai)
+        i = 0
+        while i < len(player_list):
+            if check_win(i, player_list[i], opponent, fitness, game_list, genome_list):
+                player_list.pop(i)
+                network_list.pop(i)
+                genome_list.pop(i)
+                game_list.pop(i)
+                i -= 1
+            i += 1
 
-            if check_win(i, ai, opponent, fitness, game_list, genome_list, player_list, network_list):
-                continue
+        if len(player_list)>0:
+            for i in range(len(player_list)):
+                draw_game(window, game_list[i], player_list[i], opponent)
+                pygame.time.delay(2000)
