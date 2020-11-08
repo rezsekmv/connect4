@@ -1,5 +1,5 @@
 from constants import *
-#from draw import *
+from draw import *
 from player import *
 from game import *
 from logger import *
@@ -57,7 +57,7 @@ def eval_genomes(genomes, config):
         # AI move
         for game in game_list:
 
-            # 2nd try input = tuple(map(tuple, game.board))
+            # 2nd try input_nodes = tuple(map(tuple, game.board))
             input_nodes = tuple(game.board.reshape(1, -1)[0])
             output_nodes = [0, 0, 0, 0, 0, 0, 0]
             if game.next_player == red1:

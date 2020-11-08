@@ -15,7 +15,7 @@ def run(config_file):
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
 
-    winner = p.run(eval_genomes, 100)
+    winner = p.run(eval_genomes, 400)
 
     with open("winner.pickle", "wb") as f:
         pickle.dump(winner, f)
@@ -30,11 +30,11 @@ def replay_genome(config_file, genome_path="winner.pickle"):
     with open(genome_path, "rb") as f:
         genome = pickle.load(f)
 
-    play_against_human(genome, config)
+    play_against_human(genome, config, 2)
 
 def main():
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, 'neat-config.txt')
-    run(config_path)
+    replay_genome(config_path)
 
 main()
