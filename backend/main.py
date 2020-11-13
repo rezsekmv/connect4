@@ -15,7 +15,7 @@ def run(config_file):
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
 
-    winner = p.run(eval_genomes, 400)
+    winner = p.run(eval_genomes, 420)
 
     with open("winner.pickle", "wb") as f:
         pickle.dump(winner, f)
