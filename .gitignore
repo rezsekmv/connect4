@@ -1,7 +1,7 @@
 #backend
 backend/.idea/
 backend/__pycache__/
-
+*.pickle
 
 #frontend
 frontend/.vscode/

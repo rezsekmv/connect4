@@ -2,10 +2,16 @@ import numpy
 
 class Game:
 
-    def __init__(self):
+    def __init__(self, p1=None, p2=None, next_p=None):
         self.ROWNUM = 6
         self.COLNUM = 7
         self.board = numpy.zeros((self.ROWNUM, self.COLNUM))
+        self.p1 = p1
+        self.p2 = p2
+        self.next_player = next_p
+
+    def __str__(self):
+        return str(self.board)
 
     #=================================
     # place a players circle
@@ -16,7 +22,6 @@ class Game:
                 self.board[i, column] = player.id
                 return True
         return False
-
 
     #=================================
     # checks if the game is over
