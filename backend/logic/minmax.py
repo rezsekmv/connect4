@@ -1,5 +1,5 @@
-from player import *
-from game import *
+from logic.player import *
+from logic.game import *
 from logger import *
 
 import random
@@ -14,7 +14,7 @@ class MinMaxPlayer(Player):
     def __init__(self, id, color=None):
         super().__init__(id, color)
         self.color = color
-        self.depth = 3
+        self.depth = 5
 
     #=================================
     # place a circle on the board

@@ -10,13 +10,14 @@ export default function PlayerPicker(props) {
             <Picker
                 selectedValue={selected}
                 style={styles.picker}
-                onValueChange={(itemValue) => {
+                mode='dropdown'
+                onValueChange={(itemValue, itemIndex) => {
                     setSelected(itemValue)
                     props.picker(props.player, itemValue)
                 }}>
-                
+
                 {playerValues.map( (v, k) => {
-                    return (<Picker.Item key={k} label={v} values={v}></Picker.Item>)
+                    return (<Picker.Item key={k} label={v} value={v}></Picker.Item>)
                 })}
             </Picker>
         </View>

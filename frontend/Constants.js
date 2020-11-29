@@ -8,12 +8,11 @@ export const COLNUM = 7;
 export const webWidth = 80;
 export const webHeigth = 50;
 
-//export const URLmove = 'http://localhost:5000/move';
+export const URLneatai = 'http://192.169.1.9:5000/neatai';
+export const URLminmax = 'http://192.169.1.9:5000/minmax';
+export const URLcheckwin = 'http://192.169.1.9:5000/checkwin';
 
-export const URLmove = 'http://152.66.239.241:5000/move';
-export const URLcheckwin = 'http://152.66.239.241:5000/checkwin';
-
-export const playerValues = ['human', 'minmax'];
+export const playerValues = ['human', 'minmax', 'neatai'];
 
 export function padding(a, b, c, d) {
     return {
